@@ -1,0 +1,81 @@
+/* PokerGame.css */
+body {
+  background-color: #2e7d32; /* Couleur de fond verte pour l'ambiance de poker */
+  color: #ffffff; /* Couleur du texte blanche */
+  font-family: 'Arial', sans-serif; /* Police de caractères */
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+button {
+  background-color: #4CAF50; /* Couleur de fond verte */
+  border: none;
+  color: white; /* Couleur du texte blanche */
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px; /* Coins arrondis */
+  transition: background-color 0.3s; /* Effet de transition */
+}
+
+button:hover {
+  background-color: #45a049; /* Couleur plus foncée au survol */
+}
+
+input[type="number"] {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px; /* Coins arrondis */
+  border: none;
+}
+
+input[type="number"]::placeholder {
+  color: #cccccc; /* Couleur du texte d'espace réservé */
+}
+
+input[type="number"]:focus {
+  outline: none; /* Retire le contour par défaut */
+  border: 2px solid #45a049; /* Contour vert au focus */
+}
+
+.card {
+  display: inline-block;
+  padding: 10px;
+  border: 1px solid #ffffff; /* Bordure blanche autour des cartes */
+  border-radius: 5px; /* Coins arrondis pour les cartes */
+  margin: 5px; /* Espacement entre les cartes */
+  background-color: #4CAF50; /* Couleur de fond des cartes */
+  font-size: 24px; /* Taille de la police pour les cartes */
+  text-align: center; /* Centrer le texte des cartes */
+}
+
+@keyframes drawCard {
+  from {
+      transform: scale(0);
+      opacity: 0;
+  }
+  to {
+      transform: scale(1);
+      opacity: 1;
+  }
+}
+
+.card {
+  display: inline-block;
+  padding: 10px;
+  border: 1px solid #ffffff; /* Bordure blanche autour des cartes */
+  border-radius: 5px; /* Coins arrondis pour les cartes */
+  margin: 5px; /* Espacement entre les cartes */
+  background-color: #4CAF50; /* Couleur de fond des cartes */
+  font-size: 24px; /* Taille de la police pour les cartes */
+  text-align: center; /* Centrer le texte des cartes */
+  animation: drawCard 0.5s ease forwards; /* Animation lors du tirage */
+}
+
+
