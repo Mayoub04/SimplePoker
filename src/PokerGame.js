@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import './PokerGame.css'; // Importation du fichier CSS
+import './PokerGame.css'; 
 
 const suits = ['♠', '♣', '♥', '♦'];
-const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const values = ['7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 
 const createDeck = () => {
     const deck = [];
@@ -34,12 +34,24 @@ const evaluateHand = (hand) => {
 
     const countValues = Object.values(counts);
     const uniqueCounts = new Set(countValues);
+    const isPair = countValues.includes(2);
+    const isThreeOfAKind = countValues.includes(3);
+    const isFourOfAKind = countValues.includes(4);
 
-    if (countValues.includes(4)) return "Carré"; // Four of a kind
-    if (countValues.includes(3)) return "Brelan"; // Three of a kind
-    if (countValues.filter(count => count === 2).length === 2) return "Double Paire"; // Two pair
-    if (countValues.includes(2)) return "Paire"; // One pair
-    return "Carte Haute"; // High card
+    if (isFourOfAKind) return "Carré";
+    if (isThreeOfAKind && isPair) return "Full House";
+    if (isThreeOfAKind) return "Brelan"; 
+    if (countValues.filter(count => count === 2).length === 2) return "Double Paire"; 
+    if (isPair) return "Paire"; 
+
+    return "Carte Haute";
+};
+
+const getHighestCard = (hand) => {
+    const cardValue = (card) => values.indexOf(card.value);
+    return hand.reduce((highest, card) => {
+        return cardValue(card) > cardValue(highest) ? card : highest;
+    });
 };
 
 const PokerGame = () => {
@@ -53,25 +65,22 @@ const PokerGame = () => {
     const [bettingPhase, setBettingPhase] = useState(false);
 
     const startGame = async () => {
-        // Réinitialiser les états des mains et du gagnant
-        setPlayerHand([]);  
-        setComputerHand([]); 
-        setWinner(null); 
-        setComputerBet(Math.floor(Math.random() * 100) + 1); // Mise de l'ordinateur
-
-        // S'assurer que la mise est définie avant de commencer
+        setPlayerHand([]);
+        setComputerHand([]);
+        setWinner(null);
+        setComputerBet(Math.floor(Math.random() * 100) + 1);
+    
         const bet = parseInt(betAmount);
         if (isNaN(bet) || bet <= 0) {
             alert("Veuillez entrer une mise valide !");
             return;
         }
         setPlayerBet(bet);
-
+    
         const newDeck = createDeck();
         const playerCards = [];
         const computerCards = [];
-
-        // Tirer 4 cartes pour le joueur et l'ordinateur
+    
         for (let i = 0; i < 4; i++) {
             const playerCard = drawCards(newDeck, 1)[0];
             const computerCard = drawCards(newDeck, 1)[0];
@@ -82,40 +91,47 @@ const PokerGame = () => {
             setPlayerHand(prev => [...prev, playerCard]);
             setComputerHand(prev => [...prev, computerCard]);
             
-            await new Promise(resolve => setTimeout(resolve, 500)); // Délai de 0.5 seconde
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
-
+    
         setDeck(newDeck);
-
+    
         const playerScore = evaluateHand(playerCards);
         const computerScore = evaluateHand(computerCards);
-
-        // Logique pour déterminer le gagnant
-        if (playerBet > computerBet) {
+    
+        const handRanks = { "Carte Haute": 1, "Paire": 2, "Double Paire": 3, "Brelan": 4, "Full House": 5, "Carré": 6 };
+        
+        if (handRanks[playerScore] > handRanks[computerScore]) {
             setWinner("Joueur");
-        } else if (computerBet > playerBet) {
+        } else if (handRanks[computerScore] > handRanks[playerScore]) {
             setWinner("Ordinateur");
         } else {
-            const handRanks = { "Carte Haute": 1, "Paire": 2, "Double Paire": 3, "Brelan": 4, "Carré": 5 };
-            if (handRanks[playerScore] > handRanks[computerScore]) {
-                setWinner("Joueur");
-            } else if (handRanks[computerScore] > handRanks[playerScore]) {
-                setWinner("Ordinateur");
-            } else {
-                setWinner("Égalité");
-            }
+            
+            const compareHands = (handA, handB) => {
+                const sortedA = handA.sort((a, b) => values.indexOf(b.value) - values.indexOf(a.value));
+                const sortedB = handB.sort((a, b) => values.indexOf(b.value) - values.indexOf(a.value));
+                
+                for (let i = 0; i < sortedA.length; i++) {
+                    const valueA = values.indexOf(sortedA[i].value);
+                    const valueB = values.indexOf(sortedB[i].value);
+                    if (valueA !== valueB) return valueA > valueB ? "Joueur" : "Ordinateur";
+                }
+                return "Égalité";
+            };
+    
+            setWinner(compareHands(playerCards, computerCards));
         }
-
-        // Réinitialiser la phase de mise après avoir démarré le jeu
+    
         setBettingPhase(false);
     };
+    
 
     const handleBetChange = (e) => {
         setBetAmount(e.target.value);
     };
 
     const handleNewGame = () => {
-        // Réinitialiser tous les états
+        
         setDeck(createDeck());
         setPlayerHand([]); 
         setComputerHand([]); 
@@ -123,7 +139,7 @@ const PokerGame = () => {
         setPlayerBet(0);
         setComputerBet(0);
         setBetAmount(''); 
-        setBettingPhase(true); // Passer à la phase de mise
+        setBettingPhase(true); 
     };
 
     return (
@@ -148,7 +164,10 @@ const PokerGame = () => {
                 <div>
                     {playerHand.length > 0 ? (
                         playerHand.map((card, i) => (
-                            <span key={i} className="card">{card.value}{card.suit}</span>
+                            <div key={i} className="card">
+                                <span className="card-value">{card.value}</span>
+                                <span className="card-suit">{card.suit}</span>
+                            </div>
                         ))
                     ) : (
                         <span>Aucune carte</span>
@@ -162,7 +181,10 @@ const PokerGame = () => {
                 <div>
                     {computerHand.length > 0 ? (
                         computerHand.map((card, i) => (
-                            <span key={i} className="card">{card.value}{card.suit}</span>
+                            <div key={i} className="card">
+                                <span className="card-value">{card.value}</span>
+                                <span className="card-suit">{card.suit}</span>
+                            </div>
                         ))
                     ) : (
                         <span>Aucune carte</span>
