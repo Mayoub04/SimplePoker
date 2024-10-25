@@ -144,7 +144,7 @@ const PokerGame = () => {
 
     return (
         <div style={{ textAlign: 'center' }}>
-            <h1>Jeu de Poker Simplifié - Joueur vs Ordinateur</h1>
+            <h1>Simple Poker</h1>
             {bettingPhase ? (
                 <div>
                     <input
@@ -159,14 +159,16 @@ const PokerGame = () => {
             ) : (
                 <button onClick={handleNewGame}>Nouvelle Partie</button>
             )}
-            <div style={{ marginTop: '20px' }}>
+            <div className="hand-container">
                 <h2>Joueur</h2>
-                <div>
+                <div className="hand">
                     {playerHand.length > 0 ? (
                         playerHand.map((card, i) => (
                             <div key={i} className="card">
-                                <span className="card-value">{card.value}</span>
-                                <span className="card-suit">{card.suit}</span>
+                                <div className="card-inner">
+                                    <div className="card-front">?</div>
+                                    <div className="card-back">{card.value}{card.suit}</div>
+                                </div>
                             </div>
                         ))
                     ) : (
@@ -176,14 +178,16 @@ const PokerGame = () => {
                 <h3>Combinaison : {playerHand.length ? evaluateHand(playerHand) : "En attente"}</h3>
                 <h3>Mise : {playerBet} $</h3>
             </div>
-            <div style={{ marginTop: '20px' }}>
+            <div className="hand-container">
                 <h2>Ordinateur</h2>
-                <div>
+                <div className="hand">
                     {computerHand.length > 0 ? (
                         computerHand.map((card, i) => (
                             <div key={i} className="card">
-                                <span className="card-value">{card.value}</span>
-                                <span className="card-suit">{card.suit}</span>
+                                <div className="card-inner">
+                                    <div className="card-front">?</div>
+                                    <div className="card-back">{card.value}{card.suit}</div>
+                                </div>
                             </div>
                         ))
                     ) : (
